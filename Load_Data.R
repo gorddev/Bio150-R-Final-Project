@@ -1,10 +1,10 @@
-library(ggplot)
+library(ggplot2)
 
 # Read data
 res <- read.csv(
   "Resistance_Data.csv",
   na.strings = c("", "NA")
-)
+) |> dplyr::tibble()
 
 
 ####################################
@@ -40,30 +40,28 @@ res <- subset(
 ########## Creates main dataset ###
 ###################################
 
-dat$Lineage <- factor(dat$Lineage)
-dat$Treatment <- factor(
-  dat$Treatment,
+res$Lineage <- factor(res$Lineage)
+res$Treatment <- factor(
+  res$Treatment,
   levels = c("Wild-Type", "Mutant")
 )
-dat$Selection <- factor(
-  dat$Selection,
+res$Selection <- factor(
+  res$Selection,
   levels = c("Control", "Selection")
 )
 
 # Treat generation as categorical:
-dat$Generation <- factor(dat$Generation, levels = 1:5)
+res$Generation <- factor(res$Generation, levels = 1:5)
 
 # Mean ZOI for each combination
 res.means <- aggregate(
   ZOI_R ~ Generation + Treatment + Selection,
-  data = dat,
+  data = res,
   FUN = mean
 )
 res.means
 
 par(mfrow = c(1, 1))
-
-control_data <- subset(dat, Selection == "Control")
 
 ######################################################
 ############# Separate by antibiotic type ############
@@ -87,3 +85,14 @@ res.by_antibiotic$Antibiotic <- dplyr::recode(res.by_antibiotic$Antibiotic,
   ZOI_S = "Streptomycin",
   ZOI_T = "Tetracycline"
 ) 
+
+
+######################################################
+############# Separate by control vs. selection ######
+######################################################
+
+res.control <- res |>
+  dplyr::filter(Selection == "Control")
+
+res.select <- res |>
+  dplyr::filter(Selection == "Selection")

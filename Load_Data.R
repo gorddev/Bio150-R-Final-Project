@@ -102,3 +102,14 @@ res.control <- res |>
 
 res.select <- res |>
   dplyr::filter(Selection == "Selection")
+
+
+######################################################
+############# Save image #############################
+######################################################
+
+res.start_image <- function(graph_title) {
+  png(paste0("output/", graph_title, ".png"), width = 8, height = 6, units = "in", res = 400)
+}
+
+res.end_image <- \() dev.off()

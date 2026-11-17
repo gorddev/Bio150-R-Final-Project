@@ -1,8 +1,14 @@
 library(ggplot2)
 
+if(Sys.getenv("RSTUDIO") == "1") {
+  res.file <- "~/Bio_150_F26/Class/Data/Lee_Lab/Resistance_Data.csv"
+} else {
+  res.file <- "Resistance_Data.csv"
+}
+
 # Read data
 res <- read.csv(
-  "Resistance_Data.csv",
+  res.file,
   na.strings = c("", "NA")
 ) |> dplyr::tibble()
 

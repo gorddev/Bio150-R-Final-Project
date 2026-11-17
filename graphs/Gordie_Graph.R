@@ -2,6 +2,8 @@ source("../Load_Data.R")
 
 library(ggplot2)
 
+res.start_image("Zone of Interest by Antibiotic and Treatment Type");
+
 ggplot(res.by_antibiotic, aes(x = Antibiotic, y = ZOI, fill = Treatment)) +
   #geom_col(position = position_dodge(width = 0.8), width = 0.7) +
   geom_boxplot(
@@ -23,3 +25,5 @@ ggplot(res.by_antibiotic, aes(x = Antibiotic, y = ZOI, fill = Treatment)) +
     panel.grid.major.x = element_blank(),
     legend.position = "top"
   )
+
+res.end_image()

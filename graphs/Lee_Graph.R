@@ -1,5 +1,7 @@
 source("../Load_Data.R");
 
+res.start_image("Lee Graph")
+
 with(control_data, interaction.plot(
   x.factor = Generation,
   trace.factor = Treatment,
@@ -14,3 +16,5 @@ with(control_data, interaction.plot(
   trace.label = "Treatment",
   main = "Control"
 ))
+
+res.end_image()

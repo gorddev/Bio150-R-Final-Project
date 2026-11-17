@@ -1,23 +1,28 @@
 library(ggplot)
 
 # Read data
-resistance <- read.csv(
+res <- read.csv(
   "Resistance_Data.csv",
   na.strings = c("", "NA")
 )
 
+
+####################################
+######## Cleans the data ###########
+####################################
+
 # Inspect lineage identifiers with incomplete time series.
 # Check these for naming errors before final analysis.
-lineage_counts <- table(resistance$Lineage)
+lineage_counts <- table(res$Lineage)
 lineage_counts[lineage_counts != 5]
 
 # Repeated-measures ANOVA needs complete time series.
 # with no missing measurements.
 valid <- tapply(
-  seq_len(nrow(resistance)),
-  resistance$Lineage,
+  seq_len(nrow(res)),
+  res$Lineage,
   function(i) {
-    x <- resistance[i, ]
+    x <- res[i, ]
     nrow(x) == 5 &&
       setequal(x$Generation, 1:5) &&
       !anyNA(x$ZOI_R) &&
@@ -26,10 +31,14 @@ valid <- tapply(
   }
 )
 
-dat <- subset(
-  resistance,
+res <- subset(
+  res,
   Lineage %in% names(valid)[valid]
 )
+
+###################################
+########## Creates main dataset ###
+###################################
 
 dat$Lineage <- factor(dat$Lineage)
 dat$Treatment <- factor(
@@ -45,28 +54,36 @@ dat$Selection <- factor(
 dat$Generation <- factor(dat$Generation, levels = 1:5)
 
 # Mean ZOI for each combination
-means <- aggregate(
+res.means <- aggregate(
   ZOI_R ~ Generation + Treatment + Selection,
   data = dat,
   FUN = mean
 )
-means
+res.means
 
 par(mfrow = c(1, 1))
 
 control_data <- subset(dat, Selection == "Control")
 
-with(control_data, interaction.plot(
-  x.factor = Generation,
-  trace.factor = Treatment,
-  response = ZOI_R,
-  fun = mean,
-  type = "b",
-  pch = c(16, 17),
-  col = c("steelblue", "firebrick"),
-  ylim = c(3,9),
-  xlab = "Generation",
-  ylab = "Mean rifampin zone of inhibition",
-  trace.label = "Treatment",
-  main = "Control"
-))
+######################################################
+############# Separate by antibiotic type ############
+######################################################
+
+res.by_antibiotic <- res |>
+  dplyr::filter(!is.na(ZOI_T), Selection == "Selection") |>
+  tidyr::pivot_longer(
+    cols = c(ZOI_S, ZOI_T, ZOI_R, ZOI_P),
+    names_to = "Antibiotic",
+    values_to = "ZOI"
+  ) |> 
+  dplyr::mutate(
+    Antibiotic = as.factor(Antibiotic),
+    Selection = as.factor(Selection),
+    Treatment = as.factor(Treatment),
+  )
+res.by_antibiotic$Antibiotic <- dplyr::recode(res.by_antibiotic$Antibiotic, 
+  ZOI_R = "Rifampin", 
+  ZOI_P = "Penicillin", 
+  ZOI_S = "Streptomycin",
+  ZOI_T = "Tetracycline"
+) 

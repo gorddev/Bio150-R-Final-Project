@@ -2,26 +2,7 @@ source("../Load_Data.R")
 
 library(ggplot2)
 
-sep <- resistance |>
-  dplyr::filter(!is.na(ZOI_T), Selection == "Selection") |>
-  tidyr::pivot_longer(
-    cols = c(ZOI_S, ZOI_T, ZOI_R, ZOI_P),
-    names_to = "Antibiotic",
-    values_to = "ZOI"
-  ) |> 
-  dplyr::mutate(
-    Antibiotic = as.factor(Antibiotic),
-    Selection = as.factor(Selection),
-    Treatment = as.factor(Treatment),
-  )
-sep$Antibiotic <- dplyr::recode(sep$Antibiotic, 
-  ZOI_R = "Rifampin", 
-  ZOI_P = "Penicillin", 
-  ZOI_S = "Streptomycin",
-  ZOI_T = "Tetracycline"
-) 
-
-ggplot(sep, aes(x = Antibiotic, y = ZOI, fill = Treatment)) +
+ggplot(res.by_antibiotic, aes(x = Antibiotic, y = ZOI, fill = Treatment)) +
   #geom_col(position = position_dodge(width = 0.8), width = 0.7) +
   geom_boxplot(
     position = position_dodge(width = 0.8),

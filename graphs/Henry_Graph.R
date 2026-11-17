@@ -2,7 +2,7 @@ source("../Load_Data.R")
 
 #Shows all 5 generagtions
 
-boxplot(ZOI_R ~ Generation:Treatment, data = dat, 
+boxplot(ZOI_R ~ Generation:Treatment, data = res, 
     main = "Radius of Rifampin ZOI by Treatment Type and Generation",
     xlab = "Treatment Type and Generations",
     ylab = "ZOI Radius aroung ",
@@ -14,7 +14,7 @@ legend("topleft",
     title = "Treament Type")
 
 #Shows average of all generagtions
-boxplot(ZOI_R ~ Treatment, data = dat,
+boxplot(ZOI_R ~ Treatment, data = res,
     main = "Radius of Rifampin ZOI by Treatment Type and Generation",
     xlab = "Treatment Type and Generations",
     ylab = "ZOI Radius aroung ",
@@ -27,6 +27,6 @@ legend("topleft",
     title = "Treament Type")
 
 #ONE SIDED t test for data 
-t.test(ZOI_R ~ Treatment, data = dat, alternative = c("less"))
+t.test(ZOI_R ~ Treatment, data = res, alternative = c("less"))
 
 
